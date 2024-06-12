@@ -1,5 +1,28 @@
 import React from "react";
+function handleNumericInput(
+    e,
+    maxLength = Infinity,
+    min = -Infinity,
+    max = Infinity,
+) {
+    let value = e.target.value;
+    if (isNaN(parseInt(value.slice(-1))))
+        e.target.value = e.target.value.slice(0, -1);
+    if (!isNaN(max) && !isNaN(min)) {
+        if (
+            parseInt(e.target.value) > max ||
+            parseInt(e.target.value) * 1 < min
+        ) {
+            e.target.value = e.target.value.slice(0, -1);
+        }
 
+        if (!isNaN(maxLength)) {
+            if (e.target.value.length > maxLength) {
+                e.target.value = e.target.value.slice(0, -1);
+            }
+        }
+    }
+}
 const fields = [
     {
         customer: [
@@ -8,24 +31,35 @@ const fields = [
                 placeHolder: "Order number",
                 inputType: "text",
                 id: "Order-number",
+                isNumeric: true,
             },
             {
                 labelName: "Order state",
                 placeHolder: "Order state",
                 inputType: "text",
                 id: "order-state",
+                isNumeric: false,
             },
             {
                 labelName: "Customer name",
                 placeHolder: "Customer name",
                 inputType: "text",
                 id: "customer-name",
+                isNumeric: false,
+            },
+            {
+                labelName: "Customer phone number",
+                placeHolder: "Customer phone number",
+                inputType: "text",
+                id: "customer-phone",
+                isNumeric: true,
             },
             {
                 labelName: "Customer city",
                 placeHolder: "Customer city",
                 inputType: "text",
                 id: "customer-city",
+                isNumeric: false,
             },
         ],
         seller: [
@@ -34,18 +68,21 @@ const fields = [
                 placeHolder: "Seller name",
                 inputType: "text",
                 id: "seller-name",
+                isNumeric: false,
             },
             {
                 labelName: "Seller profit",
                 placeHolder: "Seller profit",
                 inputType: "text",
                 id: "seller-profit",
+                isNumeric: true,
             },
             {
                 labelName: "Total cost",
                 placeHolder: "Total cost",
                 inputType: "text",
                 id: "total-cost",
+                isNumeric: true,
             },
         ],
         "customer-optins": [
@@ -84,6 +121,7 @@ function MainForm() {
                         key={field.id}
                         placeHolder={field.placeHolder}
                         inputType={field.inputType}
+                        isNumeric={field.isNumeric}
                     />
                 ))}
                 {fields[0]["customer-optins"].map((option) => (
@@ -104,6 +142,7 @@ function MainForm() {
                         key={field.id}
                         placeHolder={field.placeHolder}
                         inputType={field.inputType}
+                        isNumeric={field.isNumeric}
                     />
                 ))}
             </div>
@@ -120,6 +159,7 @@ function FormElement(props) {
         isSelect = false,
         placeHolder = null,
         inputType = null,
+        isNumeric = false,
     } = props;
 
     if (isSelect && options) {
@@ -140,7 +180,18 @@ function FormElement(props) {
     return (
         <div className="form-element">
             <label htmlFor={id}>{labelName}</label>
-            <input type={inputType} id={id} placeholder={placeHolder} />
+            <input
+                onChange={
+                    isNumeric
+                        ? (e) => {
+                              handleNumericInput(e);
+                          }
+                        : null
+                }
+                type={inputType}
+                id={id}
+                placeholder={placeHolder}
+            />
         </div>
     );
 }
