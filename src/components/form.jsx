@@ -1,4 +1,32 @@
 import React from "react";
+import axios from "axios";
+async function handleSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = {
+        "order-num": formData.get("order-number"),
+        "order-state": formData.get("order-state"),
+        "customer-name": formData.get("customer-name"),
+        "customer-city": formData.get("customer-city"),
+        "customer-phone": formData.get("customer-phone"),
+        "seller-name": formData.get("seller-name"),
+        "total-cost": formData.get("total-cost"),
+        "seller-profit": formData.get("seller-profit"),
+    };
+    try {
+        const response = await axios.post(
+            "http://localhost:8000/send",
+            JSON.stringify(data),
+            {
+                headers: {
+                    "Content-Type": "orders/json",
+                },
+            },
+        );
+    } catch (err) {
+        console.error(err);
+    }
+}
 function handleNumericInput(
     e,
     maxLength = Infinity,
@@ -30,7 +58,7 @@ const fields = [
                 labelName: "Order number",
                 placeHolder: "Order number",
                 inputType: "text",
-                id: "Order-number",
+                id: "order-number",
                 isNumeric: true,
             },
             {
@@ -112,7 +140,7 @@ const fields = [
 
 function MainForm() {
     return (
-        <form className="main-form">
+        <form className="main-form" onSubmit={(e) => handleSubmit(e)}>
             <div className="fields customer-fields">
                 {fields[0].customer.map((field) => (
                     <FormElement
@@ -166,7 +194,7 @@ function FormElement(props) {
         return (
             <div className="form-element">
                 <label htmlFor={id}>{labelName}</label>
-                <select name={labelName} id={id}>
+                <select name={id} id={id}>
                     {options.map((option) => (
                         <option key={option} value={option}>
                             {option}
@@ -191,6 +219,7 @@ function FormElement(props) {
                 type={inputType}
                 id={id}
                 placeholder={placeHolder}
+                name={id}
             />
         </div>
     );
