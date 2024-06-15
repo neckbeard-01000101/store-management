@@ -1,7 +1,9 @@
 import React from "react";
 import axios from "axios";
+
 async function handleSubmit(e) {
     e.preventDefault();
+    if (!confirm("Are you sure you want to submit the data?")) return;
     const formData = new FormData(e.target);
     const data = {
         "order-num": formData.get("order-number"),
@@ -12,21 +14,33 @@ async function handleSubmit(e) {
         "seller-name": formData.get("seller-name"),
         "total-cost": formData.get("total-cost"),
         "seller-profit": formData.get("seller-profit"),
+        "delivery-fee": formData.get("fee"),
+        "cost-of-product": formData.get("cost-of-product"),
+        size: formData.get("size"),
+        color: formData.get("color"),
+        "clothes-type": formData.get("clothes-type"),
     };
+
     try {
         const response = await axios.post(
             "http://localhost:8000/send",
             JSON.stringify(data),
             {
                 headers: {
-                    "Content-Type": "orders/json",
+                    "Content-Type": "application/json",
                 },
             },
         );
+        console.log(response);
+        if (response.status === 200) {
+            alert("Data sent successfully");
+        }
     } catch (err) {
         console.error(err);
+        alert("Error sending data", err);
     }
 }
+
 function handleNumericInput(
     e,
     maxLength = Infinity,
@@ -37,10 +51,7 @@ function handleNumericInput(
     if (isNaN(parseInt(value.slice(-1))))
         e.target.value = e.target.value.slice(0, -1);
     if (!isNaN(max) && !isNaN(min)) {
-        if (
-            parseInt(e.target.value) > max ||
-            parseInt(e.target.value) * 1 < min
-        ) {
+        if (parseInt(e.target.value) > max || parseInt(e.target.value) < min) {
             e.target.value = e.target.value.slice(0, -1);
         }
 
@@ -51,6 +62,7 @@ function handleNumericInput(
         }
     }
 }
+
 const fields = [
     {
         customer: [
@@ -110,6 +122,13 @@ const fields = [
                 placeHolder: "Total cost",
                 inputType: "text",
                 id: "total-cost",
+                isNumeric: true,
+            },
+            {
+                labelName: "Cost of product",
+                placeHolder: "Cost of product",
+                inputType: "text",
+                id: "cost-of-product",
                 isNumeric: true,
             },
         ],
@@ -174,7 +193,7 @@ function MainForm() {
                     />
                 ))}
             </div>
-            <button>Submit</button>
+            <button type="submit">Submit</button>
         </form>
     );
 }
@@ -183,7 +202,7 @@ function FormElement(props) {
     const {
         labelName,
         id,
-        options = null, // array of options
+        options = null,
         isSelect = false,
         placeHolder = null,
         inputType = null,
@@ -209,13 +228,7 @@ function FormElement(props) {
         <div className="form-element">
             <label htmlFor={id}>{labelName}</label>
             <input
-                onChange={
-                    isNumeric
-                        ? (e) => {
-                              handleNumericInput(e);
-                          }
-                        : null
-                }
+                onChange={isNumeric ? (e) => handleNumericInput(e) : null}
                 type={inputType}
                 id={id}
                 placeholder={placeHolder}
