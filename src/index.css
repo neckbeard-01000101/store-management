@@ -120,3 +120,27 @@ button {
         background-color: #16689e;
     }
 }
+
+table {
+    background-color: #eee;
+    th {
+        background-color: #1a8edb;
+        color: #fff;
+        text-align: center;
+        padding: 4px 8px;
+    }
+    td {
+        text-align: center;
+        padding: 4px 8px;
+        outline: 1px solid #fff;
+    }
+}
+.data-page {
+    padding-top: 5rem;
+    padding-left: 2rem;
+    label,
+    select {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+}

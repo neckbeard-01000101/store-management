@@ -6,16 +6,16 @@ async function handleSubmit(e) {
     if (!confirm("Are you sure you want to submit the data?")) return;
     const formData = new FormData(e.target);
     const data = {
-        "order-num": formData.get("order-number"),
+        "order-num": parseInt(formData.get("order-number"), 10),
         "order-state": formData.get("order-state"),
         "customer-name": formData.get("customer-name"),
         "customer-city": formData.get("customer-city"),
-        "customer-phone": formData.get("customer-phone"),
+        "customer-phone": parseInt(formData.get("customer-phone"), 10),
         "seller-name": formData.get("seller-name"),
-        "total-cost": formData.get("total-cost"),
-        "seller-profit": formData.get("seller-profit"),
-        "delivery-fee": formData.get("fee"),
-        "cost-of-product": formData.get("cost-of-product"),
+        "total-cost": parseInt(formData.get("total-cost"), 10),
+        "seller-profit": parseInt(formData.get("seller-profit"), 10),
+        "delivery-fee": parseInt(formData.get("fee"), 10),
+        "cost-of-product": parseInt(formData.get("cost-of-product"), 10),
         size: formData.get("size"),
         color: formData.get("color"),
         "clothes-type": formData.get("clothes-type"),
