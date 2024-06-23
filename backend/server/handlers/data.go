@@ -57,29 +57,19 @@ func ToggleOrderState(w http.ResponseWriter, r *http.Request) {
 	orderID := pathSegments[len(pathSegments)-1]
 	newState := r.URL.Query().Get("newState")
 	collectionName := r.URL.Query().Get("collectionName")
-	if orderID == "" {
-		http.Error(w, "Order ID is required", http.StatusBadRequest)
-		return
-	}
-
-	if newState == "" {
-		http.Error(w, "New state is required", http.StatusBadRequest)
-		return
-	}
 
 	objectId, err := primitive.ObjectIDFromHex(orderID)
 	if err != nil {
-		fmt.Println("Invalid id")
+		panic(err)
 	}
 
 	collection := database.Client.Database("store").Collection(collectionName)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
+	fmt.Println(objectId)
 	filter := bson.M{"_id": objectId}
 	update := bson.M{"$set": bson.M{"order-state": newState}}
-	println(orderID)
 	result, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		http.Error(w, "Error updating order state: "+err.Error(), http.StatusInternalServerError)

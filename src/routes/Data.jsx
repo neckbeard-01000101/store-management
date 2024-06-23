@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios"; // Import axios
+import axios from "axios";
 
 const SERVER_URL = "http://localhost:8000";
 
@@ -70,7 +70,7 @@ export default function Data() {
                 `${SERVER_URL}/toggleOrderState/${item._id}?newState=${newState}&collectionName=${collectionName}`,
             );
             console.log("New state:", newState);
-            alert("Order state changed successfully!");
+            alert("Order state changed successfully");
         } catch (error) {
             console.error("Failed to update order state:", error);
             alert("There was an error changing the order state");

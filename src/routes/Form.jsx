@@ -72,13 +72,6 @@ const fields = [
                 isNumeric: true,
             },
             {
-                labelName: "Order state",
-                placeHolder: "Order state",
-                inputType: "text",
-                id: "order-state",
-                isNumeric: false,
-            },
-            {
                 labelName: "Customer name",
                 placeHolder: "Customer name",
                 inputType: "text",
@@ -139,7 +132,7 @@ const fields = [
             {
                 labelName: "Order state",
                 id: "order-state",
-                options: ["Done"],
+                options: ["Undone", "Done"],
             },
             {
                 labelName: "Color",
