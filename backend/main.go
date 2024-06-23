@@ -14,7 +14,6 @@ func main() {
 	router.HandleFunc("/get/", handlers.HandleSendingData)
 	router.HandleFunc("/collections", handlers.HandleGetCollections)
 	router.HandleFunc("/toggleOrderState/", handlers.ToggleOrderState)
-
 	server := &http.Server{
 		Addr:    PORT,
 		Handler: router,

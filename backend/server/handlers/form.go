@@ -7,9 +7,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func HandlePostForm(w http.ResponseWriter, r *http.Request) {
@@ -66,6 +68,21 @@ func HandlePostForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// After inserting the order into the month-specific collection
+	monthsProfitsCollection := database.Client.Database("store").Collection("months-profits")
+
+	// Check if the month document exists and update it, or create a new one if it doesn't exist
+	filter := bson.M{"month": collectionName}
+	update := bson.M{"$inc": bson.M{"profit": formData.TotalProfit}}
+	opts := options.Update().SetUpsert(true) // This option will create a new document if it doesn't exist
+
+	_, err = monthsProfitsCollection.UpdateOne(ctx, filter, update, opts)
+	if err != nil {
+		http.Error(w, "Failed to update month's profit: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Continue with the response to the client
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Inserted document ID: %s", result.InsertedID)
 }

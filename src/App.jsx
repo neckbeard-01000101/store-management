@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useLocation, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Data from "./routes/Data";
+import Profits from "./routes/Profits";
 
 import { Route, Routes } from "react-router-dom";
 
@@ -24,7 +25,8 @@ function App() {
             <Routes>
                 <Route path="/form" element={<MainForm />} />
                 <Route path="/data" element={<Data />} />
-                <Route path="*" element={<Navigate to="/form" />} />
+                <Route path="/profits" element={<Profits />} />
+                <Route path="/" element={<Navigate to="/form" />} />
             </Routes>
         </>
     );

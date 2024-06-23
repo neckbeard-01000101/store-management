@@ -7,12 +7,41 @@ export default function Data() {
     const [collections, setCollections] = useState([]);
     const [data, setData] = useState([]);
     const [selectedCollection, setSelectedCollection] = useState("06/2024");
+    const calculateAndSetPercentage = (index) => {
+        const inputField = document.getElementById(`percentage-input-${index}`);
+        if (!inputField) {
+            console.error("Input field not found");
+            return;
+        }
 
+        const totalProfit = data[index]["total-profit"];
+        if (!totalProfit) {
+            console.error(
+                "Invalid item or total-profit not found:",
+                data[index],
+            );
+            return;
+        }
+
+        const userPercentage = parseFloat(inputField.value);
+        if (isNaN(userPercentage)) {
+            console.error("Invalid percentage input:", inputField.value);
+            return;
+        }
+
+        const calculatedPercentage = (userPercentage / 100) * totalProfit;
+        inputField.value = calculatedPercentage.toString();
+    };
     useEffect(() => {
         const fetchCollections = async () => {
             try {
                 const response = await axios.get(`${SERVER_URL}/collections`);
                 setCollections(response.data);
+                setCollections((prev) =>
+                    prev.filter(
+                        (collection) => collection !== "months-profits",
+                    ),
+                );
             } catch (error) {
                 console.error("Failed to fetch collections:", error);
             }
@@ -110,6 +139,8 @@ export default function Data() {
                                 <th>Size</th>
                                 <th>Color</th>
                                 <th>Clothes Type</th>
+                                <th>Total profit</th>
+                                <th>Profit percentage</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -140,6 +171,21 @@ export default function Data() {
                                     <td>{item.size}</td>
                                     <td>{item.color}</td>
                                     <td>{item["clothes-type"]}</td>
+                                    <td>{item["total-profit"]}</td>
+                                    <td>
+                                        <input
+                                            type="text"
+                                            id={`percentage-input-${index}`} // Unique ID for each input
+                                            placeholder="Enter percentage"
+                                        />
+                                        <button
+                                            onClick={() =>
+                                                calculateAndSetPercentage(index)
+                                            }
+                                        >
+                                            Calculate
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -149,4 +195,3 @@ export default function Data() {
         </div>
     );
 }
-
