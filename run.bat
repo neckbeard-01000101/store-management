@@ -23,16 +23,21 @@ if %errorlevel% neq 0 (
     echo Go is already installed.
 )
 
-fnm --version >nul 2>&1
+node -v >nul 2>&1
 if %errorlevel% neq 0 (
-    echo fnm is not installed. Installing fnm...
-    winget install Schniz.fnm
-) else (
-    echo fnm is already installed.
-)
+    fnm --version >nul 2>&1
+    if %errorlevel% neq 0 (
+        echo fnm is not installed. Installing fnm...
+        winget install Schniz.fnm
+    ) else (
+        echo fnm is already installed.
+    )
 
-echo Checking Node.js version 20...
-fnm use --install-if-missing 20
+    echo Node.js is not installed. Installing Node.js version 20...
+    fnm use --install-if-missing 20
+) else (
+    echo Node.js is already installed.
+)
 
 echo Verifying Node.js installation...
 node -v
@@ -48,7 +53,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-echo Installing node modules and dependencies...
+echo Installing dependencies...
 npm install
 
 echo Running frontend server...
