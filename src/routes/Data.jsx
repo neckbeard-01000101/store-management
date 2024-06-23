@@ -136,6 +136,7 @@ export default function Data() {
                                 <th>Seller Profit</th>
                                 <th>Delivery Fee</th>
                                 <th>Cost of Product</th>
+                                <th>Number of pieces</th>
                                 <th>Size</th>
                                 <th>Color</th>
                                 <th>Clothes Type</th>
@@ -147,8 +148,18 @@ export default function Data() {
                             {data.map((item, index) => (
                                 <tr key={index}>
                                     <td>{item["order-num"]}</td>
-                                    <td>
+                                    <td
+                                        style={
+                                            item["order-state"] === "Done"
+                                                ? {
+                                                      backgroundColor:
+                                                          "#abffc4",
+                                                  }
+                                                : null
+                                        }
+                                    >
                                         {item["order-state"]}
+
                                         <button
                                             className="state-btn"
                                             onClick={() =>
@@ -168,6 +179,7 @@ export default function Data() {
                                     <td>{item["seller-profit"]}</td>
                                     <td>{item["delivery-fee"]}</td>
                                     <td>{item["cost-of-product"]}</td>
+                                    <td>{item["pieces-num"]}</td>
                                     <td>{item.size}</td>
                                     <td>{item.color}</td>
                                     <td>{item["clothes-type"]}</td>
@@ -175,7 +187,7 @@ export default function Data() {
                                     <td>
                                         <input
                                             type="text"
-                                            id={`percentage-input-${index}`} // Unique ID for each input
+                                            id={`percentage-input-${index}`}
                                             placeholder="Enter percentage"
                                         />
                                         <button

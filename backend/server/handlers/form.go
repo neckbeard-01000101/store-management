@@ -16,10 +16,6 @@ import (
 
 func HandlePostForm(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(&w)
-	/*
-	   add total profit => total cost - seler profit - delivery fee - cost of product
-
-	*/
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
 		return
@@ -36,6 +32,7 @@ func HandlePostForm(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	formData.TotalCost *= formData.NumOfPieces
 	formData.TotalProfit = formData.TotalCost - formData.SellerProfit - formData.DeliveryFee - formData.ProductCost
 	now := time.Now()
 	formData.SentDate = now.Format("02-01")
@@ -44,7 +41,6 @@ func HandlePostForm(w http.ResponseWriter, r *http.Request) {
 	collection := database.Client.Database("store").Collection(collectionName)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
 	result, err := collection.InsertOne(ctx, bson.M{
 		"order-num":       formData.OrderNum,
 		"order-state":     formData.OrderState,
@@ -62,19 +58,18 @@ func HandlePostForm(w http.ResponseWriter, r *http.Request) {
 		"total-profit":    formData.TotalProfit,
 		"sent-date":       formData.SentDate,
 		"collection-name": formData.Month,
+		"pieces-num":      formData.NumOfPieces,
 	})
 	if err != nil {
 		http.Error(w, "Error saving form data: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// After inserting the order into the month-specific collection
 	monthsProfitsCollection := database.Client.Database("store").Collection("months-profits")
 
-	// Check if the month document exists and update it, or create a new one if it doesn't exist
 	filter := bson.M{"month": collectionName}
 	update := bson.M{"$inc": bson.M{"profit": formData.TotalProfit}}
-	opts := options.Update().SetUpsert(true) // This option will create a new document if it doesn't exist
+	opts := options.Update().SetUpsert(true)
 
 	_, err = monthsProfitsCollection.UpdateOne(ctx, filter, update, opts)
 	if err != nil {
@@ -82,7 +77,6 @@ func HandlePostForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Continue with the response to the client
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Inserted document ID: %s", result.InsertedID)
 }

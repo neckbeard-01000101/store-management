@@ -23,9 +23,9 @@ body {
 }
 .navbar {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    height: 60px;
     align-items: center;
-    padding: 1rem 2rem;
     background-color: #1a8edb;
     color: white;
     width: 100vw;
@@ -33,17 +33,24 @@ body {
     top: 0;
     z-index: 100;
     .nav-links {
+        height: 100%;
         display: flex;
         gap: 1rem;
         list-style: none;
         .nav-link {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             a {
+                display: inline-block;
+                height: 100%;
+                padding-top: 10px;
                 color: white;
                 text-decoration: none;
                 font-size: 1.2rem;
             }
             padding: 0.5rem 1rem;
-            border-radius: 5px;
             transition: background-color 0.2s linear;
             &.active {
                 background-color: #16689e;

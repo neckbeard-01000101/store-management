@@ -16,6 +16,7 @@ async function handleSubmit(e) {
         "seller-profit": parseInt(formData.get("seller-profit"), 10),
         "delivery-fee": parseInt(formData.get("fee"), 10),
         "cost-of-product": parseInt(formData.get("cost-of-product"), 10),
+        "pieces-num": parseInt(formData.get("pieces-num"), 10),
         size: formData.get("size"),
         color: formData.get("color"),
         "clothes-type": formData.get("clothes-type"),
@@ -83,6 +84,13 @@ const fields = [
                 placeHolder: "Customer phone number",
                 inputType: "text",
                 id: "customer-phone",
+                isNumeric: true,
+            },
+            {
+                labelName: "Number of pieces",
+                placeHolder: "Number of pieces",
+                inputType: "text",
+                id: "pieces-num",
                 isNumeric: true,
             },
             {

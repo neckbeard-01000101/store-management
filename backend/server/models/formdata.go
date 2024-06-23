@@ -14,6 +14,7 @@ type FormData struct {
 	Color         string `json:"color"`
 	ClothesType   string `json:"clothes-type"`
 	ProductCost   int    `json:"cost-of-product"`
+	NumOfPieces   int    `json:"pieces-num"`
 	TotalProfit   int
 	SentDate      string
 	Month         string

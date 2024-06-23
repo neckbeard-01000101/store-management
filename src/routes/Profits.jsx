@@ -19,6 +19,31 @@ function Profits() {
         fetchMonths();
     }, []);
 
+    const calculateAndSetPercentage = (index) => {
+        const inputField = document.getElementById(`percentage-month-${index}`);
+        if (!inputField) {
+            console.error("Input field not found");
+            return;
+        }
+
+        const totalProfit = profits[index]["profit"];
+        if (!totalProfit) {
+            console.error(
+                "Invalid item or total-profit not found:",
+                profits[index],
+            );
+            return;
+        }
+
+        const userPercentage = parseFloat(inputField.value);
+        if (isNaN(userPercentage)) {
+            console.error("Invalid percentage input:", inputField.value);
+            return;
+        }
+
+        const calculatedPercentage = (userPercentage / 100) * totalProfit;
+        inputField.value = calculatedPercentage.toString();
+    };
     return (
         <div className="profits">
             <h2>Monthly Profits</h2>
@@ -27,6 +52,7 @@ function Profits() {
                     <tr>
                         <th>Month</th>
                         <th>Profit</th>
+                        <th>Profit percentage</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,6 +60,21 @@ function Profits() {
                         <tr key={index}>
                             <td>{profit.month}</td>
                             <td>{profit.profit}</td>
+                            <td>
+                                <input
+                                    type="text"
+                                    id={`percentage-month-${index}`}
+                                    placeholder="Enter percentage"
+                                />
+                                <br />
+                                <button
+                                    onClick={() =>
+                                        calculateAndSetPercentage(index)
+                                    }
+                                >
+                                    Calculate
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
@@ -43,4 +84,3 @@ function Profits() {
 }
 
 export default Profits;
-
