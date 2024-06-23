@@ -13,11 +13,13 @@ func main() {
 	router.HandleFunc("/send", handlers.HandlePostForm)
 	router.HandleFunc("/get/", handlers.HandleSendingData)
 	router.HandleFunc("/collections", handlers.HandleGetCollections)
+	router.HandleFunc("/toggleOrderState/", handlers.ToggleOrderState)
+
 	server := &http.Server{
 		Addr:    PORT,
 		Handler: router,
 	}
 
-	log.Printf("Starting server on port %s", PORT)
+	log.Printf("Server is running on http://localhost%s", PORT)
 	log.Fatal(server.ListenAndServe())
 }

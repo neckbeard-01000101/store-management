@@ -120,6 +120,11 @@ button {
         background-color: #16689e;
     }
 }
+.state-btn {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
 
 table {
     background-color: #eee;

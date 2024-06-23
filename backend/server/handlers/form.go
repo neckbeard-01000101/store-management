@@ -38,6 +38,7 @@ func HandlePostForm(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
 	formData.SentDate = now.Format("02-01")
 	collectionName := now.Format("01-2006")
+	formData.Month = collectionName
 	collection := database.Client.Database("store").Collection(collectionName)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -58,6 +59,7 @@ func HandlePostForm(w http.ResponseWriter, r *http.Request) {
 		"cost-of-product": formData.ProductCost,
 		"total-profit":    formData.TotalProfit,
 		"sent-date":       formData.SentDate,
+		"collection-name": formData.Month,
 	})
 	if err != nil {
 		http.Error(w, "Error saving form data: "+err.Error(), http.StatusInternalServerError)

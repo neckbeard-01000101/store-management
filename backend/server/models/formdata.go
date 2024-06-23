@@ -16,4 +16,5 @@ type FormData struct {
 	ProductCost   int    `json:"cost-of-product"`
 	TotalProfit   int
 	SentDate      string
+	Month         string
 }

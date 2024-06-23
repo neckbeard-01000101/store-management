@@ -48,18 +48,16 @@ function handleNumericInput(
     max = Infinity,
 ) {
     let value = e.target.value;
-    if (isNaN(parseInt(value.slice(-1))))
-        e.target.value = e.target.value.slice(0, -1);
-    if (!isNaN(max) && !isNaN(min)) {
-        if (parseInt(e.target.value) > max || parseInt(e.target.value) < min) {
-            e.target.value = e.target.value.slice(0, -1);
-        }
+    let lastChar = value.slice(-1);
 
-        if (!isNaN(maxLength)) {
-            if (e.target.value.length > maxLength) {
-                e.target.value = e.target.value.slice(0, -1);
-            }
-        }
+    if (isNaN(parseInt(lastChar))) {
+        e.target.value = value.slice(0, -1);
+        return;
+    }
+    let numericValue = parseInt(value);
+
+    if (numericValue > max || numericValue < min || value.length > maxLength) {
+        e.target.value = value.slice(0, -1);
     }
 }
 
@@ -137,6 +135,11 @@ const fields = [
                 labelName: "Size",
                 id: "size",
                 options: ["S", "M", "L", "XL", "XLL", "XLLL", "XLLLL"],
+            },
+            {
+                labelName: "Order state",
+                id: "order-state",
+                options: ["Done"],
             },
             {
                 labelName: "Color",
@@ -237,5 +240,4 @@ function FormElement(props) {
         </div>
     );
 }
-
 export default MainForm;
