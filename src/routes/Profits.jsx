@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+import { HandleNumericInput } from "./Form";
 function Profits() {
     const [profits, setProfits] = useState([]);
 
@@ -65,6 +65,9 @@ function Profits() {
                                     type="text"
                                     id={`percentage-month-${index}`}
                                     placeholder="Enter percentage"
+                                    onChange={(e) =>
+                                        HandleNumericInput(e, 3, 0, 100)
+                                    }
                                 />
                                 <br />
                                 <button

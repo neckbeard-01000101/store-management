@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
+import { HandleNumericInput } from "./Form";
 const SERVER_URL = "http://localhost:8000";
 
 export default function Data() {
@@ -189,6 +189,9 @@ export default function Data() {
                                             type="text"
                                             id={`percentage-input-${index}`}
                                             placeholder="Enter percentage"
+                                            onChange={(e) =>
+                                                HandleNumericInput(e, 3, 0, 100)
+                                            }
                                         />
                                         <button
                                             onClick={() =>

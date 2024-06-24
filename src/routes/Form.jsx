@@ -42,7 +42,7 @@ async function handleSubmit(e) {
     }
 }
 
-function handleNumericInput(
+export function HandleNumericInput(
     e,
     maxLength = Infinity,
     min = -Infinity,
@@ -232,7 +232,7 @@ function FormElement(props) {
         <div className="form-element">
             <label htmlFor={id}>{labelName}</label>
             <input
-                onChange={isNumeric ? (e) => handleNumericInput(e) : null}
+                onChange={isNumeric ? (e) => HandleNumericInput(e) : null}
                 type={inputType}
                 id={id}
                 placeholder={placeHolder}

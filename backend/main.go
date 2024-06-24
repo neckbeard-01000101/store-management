@@ -11,7 +11,7 @@ func main() {
 
 	router := http.NewServeMux()
 	router.HandleFunc("/send", handlers.HandlePostForm)
-	router.HandleFunc("/get/", handlers.HandleSendingData)
+	router.HandleFunc("/get/", handlers.HandleGetData)
 	router.HandleFunc("/collections", handlers.HandleGetCollections)
 	router.HandleFunc("/toggleOrderState/", handlers.ToggleOrderState)
 	server := &http.Server{

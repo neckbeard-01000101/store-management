@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func HandleSendingData(w http.ResponseWriter, r *http.Request) {
+func HandleGetData(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(&w)
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusOK)
