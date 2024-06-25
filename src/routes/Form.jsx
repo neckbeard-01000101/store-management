@@ -117,8 +117,8 @@ const fields = [
                 isNumeric: true,
             },
             {
-                labelName: "Total cost",
-                placeHolder: "Total cost",
+                labelName: "Cost per piece",
+                placeHolder: "Cost per piece",
                 inputType: "text",
                 id: "total-cost",
                 isNumeric: true,
