@@ -56,7 +56,7 @@ function Profits() {
                     </tr>
                 </thead>
                 <tbody>
-                    {profits.map((profit, index) => (
+                    {profits?.map((profit, index) => (
                         <tr key={index}>
                             <td>{profit.month}</td>
                             <td>{profit.profit}</td>

@@ -6,7 +6,7 @@ const SERVER_URL = "http://localhost:8000";
 export default function Data() {
     const [collections, setCollections] = useState([]);
     const [data, setData] = useState([]);
-    const [selectedCollection, setSelectedCollection] = useState("06/2024");
+    const [selectedCollection, setSelectedCollection] = useState("");
     const calculateAndSetPercentage = (index) => {
         const inputField = document.getElementById(`percentage-input-${index}`);
         if (!inputField) {
@@ -66,6 +66,11 @@ export default function Data() {
             fetchData();
         }
     }, [selectedCollection]);
+    useEffect(() => {
+        if (collections.length > 0) {
+          setSelectedCollection(collections[0]);
+        }
+      }, [collections]);
 
     const handleChange = (event) => {
         setSelectedCollection(event.target.value);
@@ -145,7 +150,7 @@ export default function Data() {
                             </tr>
                         </thead>
                         <tbody>
-                            {data.map((item, index) => (
+                            {data?.map((item, index) => (
                                 <tr key={index}>
                                     <td>{item["order-num"]}</td>
                                     <td
