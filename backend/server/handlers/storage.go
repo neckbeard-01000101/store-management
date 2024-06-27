@@ -6,10 +6,11 @@ import (
 	"backend/server/models"
 	"context"
 	"encoding/json"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"net/http"
 	"strconv"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func collectionNotExistOrEmpty(client *mongo.Client, dbName, collectionName string) (bool, error) {
@@ -80,13 +81,13 @@ func HandleInitilizeStorage(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func HandleAdd(w http.ResponseWriter, r *http.Request) {
+func HandleAmountUpdate(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(&w)
 	collection := database.Client.Database("store").Collection("storage")
-
+	var newQuantity int
 	product := r.URL.Query().Get("type")
 	amountStr := r.URL.Query().Get("amount")
-
+	operation := r.URL.Query().Get("oper")
 	if product == "" || amountStr == "" {
 		http.Error(w, "Missing 'type' or 'amount' query parameter", http.StatusBadRequest)
 		return
@@ -110,61 +111,17 @@ func HandleAdd(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	newQuantity := result.Quantity + amount
-
-	update := bson.D{
-		{"$set", bson.D{
-			{"quantity", newQuantity},
-		}},
-	}
-
-	_, err = collection.UpdateOne(context.TODO(), filter, update)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if operation != "add" && operation != "sub" {
+		http.Error(w, "Invalid 'oper' query parameter", http.StatusBadRequest)
 		return
 	}
-
-	response := map[string]interface{}{
-		"type_of_product": product,
-		"new_quantity":    newQuantity,
+	if operation == "add" {
+		newQuantity = result.Quantity + amount
 	}
-	json.NewEncoder(w).Encode(response)
-}
+	if operation == "sub" {
 
-func HandleSub(w http.ResponseWriter, r *http.Request) {
-
-	middleware.EnableCors(&w)
-	collection := database.Client.Database("store").Collection("storage")
-
-	product := r.URL.Query().Get("type")
-	amountStr := r.URL.Query().Get("amount")
-
-	if product == "" || amountStr == "" {
-		http.Error(w, "Missing 'type' or 'amount' query parameter", http.StatusBadRequest)
-		return
+		newQuantity = result.Quantity - amount
 	}
-
-	amount, err := strconv.Atoi(amountStr)
-	if err != nil {
-		http.Error(w, "Invalid 'amount' query parameter", http.StatusBadRequest)
-		return
-	}
-
-	filter := bson.D{{"type_of_product", product}}
-
-	var result models.Storage
-	err = collection.FindOne(context.TODO(), filter).Decode(&result)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			http.Error(w, "Product not found", http.StatusNotFound)
-			return
-		}
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	newQuantity := result.Quantity - amount
 
 	update := bson.D{
 		{"$set", bson.D{
