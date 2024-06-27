@@ -169,3 +169,12 @@ td input {
         margin-bottom: 1rem;
     }
 }
+
+.btn-container {
+    display: flex;
+    justify-content: space-around;
+    button {
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+}

@@ -67,8 +67,8 @@ func HandleInitilizeStorage(w http.ResponseWriter, r *http.Request) {
 	}
 	data := []models.Storage{
 		{TypeOfProduct: "Hoodie", Quantity: 0},
-		{TypeOfProduct: "Slim T-shirt", Quantity: 0},
-		{TypeOfProduct: "Hav T-shirt", Quantity: 0},
+		{TypeOfProduct: "Slim_T-shirt", Quantity: 0},
+		{TypeOfProduct: "Hav_T-shirt", Quantity: 0},
 	}
 
 	err = initializeCollection(database.Client, "store", "storage", data)

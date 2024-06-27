@@ -7,6 +7,7 @@ export default function Navbar() {
                 <CustomLink to="/form">Form</CustomLink>
                 <CustomLink to="/data">Data</CustomLink>
                 <CustomLink to="/profits">Monthly profits</CustomLink>
+                <CustomLink to="/storage">Storage</CustomLink>
             </ul>
         </nav>
     );

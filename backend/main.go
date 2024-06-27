@@ -2,6 +2,7 @@ package main
 
 import (
 	"backend/server/handlers"
+	"io"
 	"log"
 	"net/http"
 )
@@ -15,7 +16,7 @@ func main() {
 	router.HandleFunc("/collections", handlers.HandleGetCollections)
 	router.HandleFunc("/toggleOrderState/", handlers.ToggleOrderState)
 	router.HandleFunc("POST /initialize", handlers.HandleInitilizeStorage)
-	router.HandleFunc("PATCH /updateAmount/", handlers.HandleAmountUpdate)
+	router.HandleFunc("POST /updateAmount/", handlers.HandleAmountUpdate)
 	server := &http.Server{
 		Addr:    PORT,
 		Handler: router,

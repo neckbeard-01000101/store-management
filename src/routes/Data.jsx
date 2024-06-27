@@ -39,7 +39,9 @@ export default function Data() {
                 setCollections(response.data);
                 setCollections((prev) =>
                     prev.filter(
-                        (collection) => collection !== "months-profits",
+                        (collection) =>
+                            collection !== "months-profits" &&
+                            collection !== "storage",
                     ),
                 );
             } catch (error) {
@@ -68,9 +70,9 @@ export default function Data() {
     }, [selectedCollection]);
     useEffect(() => {
         if (collections.length > 0) {
-          setSelectedCollection(collections[0]);
+            setSelectedCollection(collections[0]);
         }
-      }, [collections]);
+    }, [collections]);
 
     const handleChange = (event) => {
         setSelectedCollection(event.target.value);
