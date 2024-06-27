@@ -14,6 +14,7 @@ func main() {
 	router.HandleFunc("/get/", handlers.HandleGetData)
 	router.HandleFunc("/collections", handlers.HandleGetCollections)
 	router.HandleFunc("/toggleOrderState/", handlers.ToggleOrderState)
+	router.HandleFunc("POST /initialize", handlers.HandleInitilizeStorage)
 	server := &http.Server{
 		Addr:    PORT,
 		Handler: router,

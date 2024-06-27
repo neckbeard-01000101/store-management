@@ -150,7 +150,7 @@ const fields = [
             {
                 labelName: "Clothes type",
                 id: "clothes-type",
-                options: ["Hoodie", "Slim T-shirt", "Half T-shirt"],
+                options: ["Hoodie", "Slim T-shirt", "Hav T-shirt"],
             },
             {
                 labelName: "Delivery fee",
