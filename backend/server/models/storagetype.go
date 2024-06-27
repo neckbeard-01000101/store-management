@@ -1,6 +1,6 @@
 package models
 
 type Storage struct {
-	TypeOfProduct string
-	Quantity      int
+	TypeOfProduct string `bson:"type_of_product"`
+	Quantity      int    `bson:"quantity"`
 }
