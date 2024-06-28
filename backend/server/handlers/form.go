@@ -16,16 +16,10 @@ import (
 
 func HandlePostForm(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(&w)
-	if r.Method == http.MethodOptions {
+	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
 		return
 	}
-
-	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-		return
-	}
-
 	var formData models.FormData
 	err := json.NewDecoder(r.Body).Decode(&formData)
 	if err != nil {

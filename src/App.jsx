@@ -5,6 +5,8 @@ import { useLocation, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Data from "./routes/Data";
 import Profits from "./routes/Profits";
+import Storage from "./routes/Storage";
+import StorageForm from "./routes/StorageForm";
 
 import { Route, Routes } from "react-router-dom";
 
@@ -26,6 +28,8 @@ function App() {
                 <Route path="/form" element={<MainForm />} />
                 <Route path="/data" element={<Data />} />
                 <Route path="/profits" element={<Profits />} />
+                <Route path="/storage" element={<Storage />} />
+                <Route path="/add-to-storage" element={<StorageForm />} />
                 <Route path="/" element={<Navigate to="/form" />} />
             </Routes>
         </>

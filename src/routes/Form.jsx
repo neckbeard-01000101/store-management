@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import axios from "axios";
 
 async function handleSubmit(e) {
@@ -34,6 +34,18 @@ async function handleSubmit(e) {
         );
         console.log(response);
         if (response.status === 200) {
+            const clothesType = data["clothes-type"];
+            const numberOfPieces = data["pieces-num"];
+            const color = data["color"];
+            const size = data["size"];
+            try {
+                const res = await axios.post(
+                    `http://localhost:8000/updateAmount/?type=${clothesType}&amount=${numberOfPieces}&oper=sub&color=${color}&size=${size}`,
+                );
+                console.log(res.data);
+            } catch (err) {
+                console.error(err);
+            }
             alert("Data sent successfully");
         }
     } catch (err) {
@@ -135,27 +147,96 @@ const fields = [
             {
                 labelName: "Size",
                 id: "size",
-                options: ["S", "M", "L", "XL", "XLL", "XLLL", "XLLLL"],
+                options: [
+                    {
+                        text: "S",
+                        value: "S",
+                    },
+                    {
+                        text: "M",
+                        value: "M",
+                    },
+                    {
+                        text: "L",
+                        value: "L",
+                    },
+                    {
+                        text: "XL",
+                        value: "XL",
+                    },
+                    {
+                        text: "XXL",
+                        value: "XXL",
+                    },
+                    {
+                        text: "XXXL",
+                        value: "XXXL",
+                    },
+                    {
+                        text: "XXXXL",
+                        value: "XXXXL",
+                    },
+                ],
             },
             {
                 labelName: "Order state",
                 id: "order-state",
-                options: ["Undone", "Done"],
+                options: [
+                    {
+                        text: "Undone",
+                        value: "Undone",
+                    },
+                    {
+                        text: "Done",
+                        value: "Done",
+                    },
+                ],
             },
             {
                 labelName: "Color",
                 id: "color",
-                options: ["Black", "White"],
+                options: [
+                    {
+                        text: "White",
+                        value: "White",
+                    },
+                    {
+                        text: "Black",
+                        value: "Black",
+                    },
+                ],
             },
             {
                 labelName: "Clothes type",
                 id: "clothes-type",
-                options: ["Hoodie", "Slim T-shirt", "Half T-shirt"],
+                options: [
+                    {
+                        text: "Hoodie",
+                        value: "Hoodie",
+                    },
+                    {
+                        text: "Slim T-shirt",
+                        value: "Slim_T-shirt",
+                    },
+                    {
+                        text: "Hav T-shirt",
+                        value: "Hav_T-shirt",
+                    },
+                ],
             },
             {
                 labelName: "Delivery fee",
                 id: "fee",
-                options: ["5000", "6000"],
+                options: [
+                    {
+                        text: "5000",
+                        value: "5000",
+                    },
+                    {
+                        text: "6000",
+                        value: "6000",
+                    },
+                ],
             },
         ],
     },
@@ -219,8 +300,8 @@ function FormElement(props) {
                 <label htmlFor={id}>{labelName}</label>
                 <select name={id} id={id}>
                     {options.map((option) => (
-                        <option key={option} value={option}>
-                            {option}
+                        <option key={option.value} value={option.value}>
+                            {option.text}
                         </option>
                     ))}
                 </select>
