@@ -1,6 +1,8 @@
 package models
 
 type Storage struct {
-	TypeOfProduct string `bson:"type_of_product"`
-	Quantity      int    `bson:"quantity"`
+	TypeOfProduct string `json:"type_of_product"`
+	Quantity      int    `json:"quantity"`
+	Color         string `json:"product_color"`
+	Size          string `json:"product_size"`
 }

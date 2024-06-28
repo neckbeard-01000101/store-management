@@ -2,11 +2,35 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { HandleNumericInput } from "./Form";
 const SERVER_URL = "http://localhost:8000";
-
 export default function Data() {
     const [collections, setCollections] = useState([]);
     const [data, setData] = useState([]);
     const [selectedCollection, setSelectedCollection] = useState("");
+
+    const handleDelete = async (itemId) => {
+        if (!confirm("Are you sure you want to DELETE an order?")) return;
+        const collectionName = selectedCollection;
+        try {
+            const response = await axios.delete(
+                `${SERVER_URL}/deleteDocument/${collectionName}/${itemId}`,
+            );
+            if (!response.status === 200) {
+                throw new Error(
+                    response.data?.message || "Failed to delete the document.",
+                );
+            }
+            const data = response.data || {
+                message: "Document deleted successfully",
+            };
+            setData((prevData) =>
+                prevData.filter((item) => item._id !== itemId),
+            );
+            alert(data.message);
+        } catch (error) {
+            console.error("Error deleting document:", error);
+            alert(error.response?.data?.message || error.message);
+        }
+    };
     const calculateAndSetPercentage = (index) => {
         const inputField = document.getElementById(`percentage-input-${index}`);
         if (!inputField) {
@@ -149,6 +173,7 @@ export default function Data() {
                                 <th>Clothes Type</th>
                                 <th>Total profit</th>
                                 <th>Profit percentage</th>
+                                <th>Delete</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -206,6 +231,17 @@ export default function Data() {
                                             }
                                         >
                                             Calculate
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button
+                                            className="delete-btn"
+                                            onClick={() =>
+                                                handleDelete(item._id)
+                                            }
+                                            style={{ background: "#ff6054" }}
+                                        >
+                                            Delete
                                         </button>
                                     </td>
                                 </tr>

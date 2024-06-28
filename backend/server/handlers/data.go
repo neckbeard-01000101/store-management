@@ -6,11 +6,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"strings"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func HandleGetData(w http.ResponseWriter, r *http.Request) {
@@ -85,4 +86,40 @@ func ToggleOrderState(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(bson.M{"message": "Order state updated successfully"})
+}
+
+func DeleteDocument(w http.ResponseWriter, r *http.Request) {
+	middleware.EnableCors(&w)
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+	pathSegments := strings.Split(r.URL.Path, "/")
+	collectionName := pathSegments[len(pathSegments)-2]
+	documentID := pathSegments[len(pathSegments)-1]
+
+	objectId, err := primitive.ObjectIDFromHex(documentID)
+	if err != nil {
+		http.Error(w, "Invalid document ID: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	fmt.Println(objectId)
+	collection := database.Client.Database("store").Collection(collectionName)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	result, err := collection.DeleteOne(ctx, bson.M{"_id": objectId})
+	if err != nil {
+		http.Error(w, "Error deleting document: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if result.DeletedCount == 0 {
+		http.Error(w, "No document found with the given ID", http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(bson.M{"message": "Document deleted successfully"})
 }

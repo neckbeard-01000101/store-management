@@ -178,3 +178,26 @@ td input {
         font-weight: 600;
     }
 }
+
+.storage-form {
+    margin-top: 4rem;
+    width: 500px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 2rem;
+    margin-inline: auto;
+    .form-element {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    input,
+    select {
+        padding: 0.5rem 1rem;
+        font-size: 1.2rem;
+    }
+    button {
+        grid-column: span 2;
+    }
+}

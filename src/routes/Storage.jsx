@@ -19,15 +19,17 @@ function Storage() {
             oper: e.target.innerText === "+" ? "add" : "sub",
             amount: inputField.value,
             type: storage[index]["type_of_product"],
+            color: storage[index]["product_color"],
+            size: storage[index]["product_size"],
         };
         console.log(
-            `${SERVER_URL}/updateAmount/?type=${parameters.type}&amount=${parameters.amount}&oper=${parameters.oper}`,
+            `${SERVER_URL}/updateAmount/?type=${parameters.type}&amount=${parameters.amount}&oper=${parameters.oper}&color=${parameters.color}&size=${parameters.size}`,
         );
         try {
             if (!confirm("Are you sure you want to update the quantity?"))
                 return;
             await axios.post(
-                `${SERVER_URL}/updateAmount/?type=${parameters.type}&amount=${parameters.amount}&oper=${parameters.oper}`,
+                `${SERVER_URL}/updateAmount/?type=${parameters.type}&amount=${parameters.amount}&oper=${parameters.oper}&color=${parameters.color}&size=${parameters.size}`,
             );
             fetchData();
         } catch (err) {
@@ -45,6 +47,8 @@ function Storage() {
                 <thead>
                     <tr>
                         <th>Product</th>
+                        <th>Color</th>
+                        <th>Size</th>
                         <th>Quantity</th>
                         <th>Update quantity</th>
                     </tr>
@@ -53,6 +57,8 @@ function Storage() {
                     {storage?.map((item, index) => (
                         <tr key={index}>
                             <td>{item["type_of_product"]}</td>
+                            <td>{item["product_color"]}</td>
+                            <td>{item["product_size"]}</td>
                             <td>{item.quantity}</td>
                             <td>
                                 <input

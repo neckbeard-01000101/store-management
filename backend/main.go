@@ -2,7 +2,6 @@ package main
 
 import (
 	"backend/server/handlers"
-	"io"
 	"log"
 	"net/http"
 )
@@ -15,8 +14,10 @@ func main() {
 	router.HandleFunc("/get/", handlers.HandleGetData)
 	router.HandleFunc("/collections", handlers.HandleGetCollections)
 	router.HandleFunc("/toggleOrderState/", handlers.ToggleOrderState)
-	router.HandleFunc("POST /initialize", handlers.HandleInitilizeStorage)
+	// router.HandleFunc("POST /initialize", handlers.HandleInitilizeStorage)
 	router.HandleFunc("POST /updateAmount/", handlers.HandleAmountUpdate)
+	router.HandleFunc("/add", handlers.HandleAddToStorage)
+	router.HandleFunc("/deleteDocument/", handlers.DeleteDocument)
 	server := &http.Server{
 		Addr:    PORT,
 		Handler: router,

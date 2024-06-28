@@ -6,8 +6,10 @@ import (
 	"backend/server/models"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -86,6 +88,8 @@ func HandleAmountUpdate(w http.ResponseWriter, r *http.Request) {
 	collection := database.Client.Database("store").Collection("storage")
 	var newQuantity int
 	product := r.URL.Query().Get("type")
+	color := r.URL.Query().Get("color")
+	size := r.URL.Query().Get("size")
 	amountStr := r.URL.Query().Get("amount")
 	operation := r.URL.Query().Get("oper")
 	if product == "" || amountStr == "" {
@@ -99,7 +103,7 @@ func HandleAmountUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filter := bson.D{{"type_of_product", product}}
+	filter := bson.D{{"type_of_product", product}, {"product_color", color}, {"product_size", size}}
 
 	var result models.Storage
 	err = collection.FindOne(context.TODO(), filter).Decode(&result)
@@ -119,7 +123,6 @@ func HandleAmountUpdate(w http.ResponseWriter, r *http.Request) {
 		newQuantity = result.Quantity + amount
 	}
 	if operation == "sub" {
-
 		newQuantity = result.Quantity - amount
 	}
 
@@ -138,6 +141,40 @@ func HandleAmountUpdate(w http.ResponseWriter, r *http.Request) {
 	response := map[string]interface{}{
 		"type_of_product": product,
 		"new_quantity":    newQuantity,
+		"product_size":    size,
+		"product_color":   color,
 	}
 	json.NewEncoder(w).Encode(response)
+}
+
+func HandleAddToStorage(w http.ResponseWriter, r *http.Request) {
+	middleware.EnableCors(&w)
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+	var storageData models.Storage
+	if err := json.NewDecoder(r.Body).Decode(&storageData); err != nil {
+		http.Error(w, "Failed to decode request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	collection := database.Client.Database("store").Collection("storage")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	insertResult, err := collection.InsertOne(ctx, bson.M{
+		"type_of_product": storageData.TypeOfProduct,
+		"product_color":   storageData.Color,
+		"product_size":    storageData.Size,
+		"quantity":        storageData.Quantity,
+	})
+	if err != nil {
+		http.Error(w, "Error inserting document into database: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	fmt.Fprintf(w, "Inserted document ID: %v", insertResult.InsertedID)
 }

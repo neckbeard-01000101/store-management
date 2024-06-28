@@ -36,9 +36,11 @@ async function handleSubmit(e) {
         if (response.status === 200) {
             const clothesType = data["clothes-type"];
             const numberOfPieces = data["pieces-num"];
+            const color = data["color"];
+            const size = data["size"];
             try {
                 const res = await axios.post(
-                    `http://localhost:8000/updateAmount/?type=${clothesType}&amount=${numberOfPieces}&oper=sub`,
+                    `http://localhost:8000/updateAmount/?type=${clothesType}&amount=${numberOfPieces}&oper=sub&color=${color}&size=${size}`,
                 );
                 console.log(res.data);
             } catch (err) {
@@ -241,22 +243,6 @@ const fields = [
 ];
 
 function MainForm() {
-    const SERVER_URL = "http://localhost:8000";
-    const isInitialized = useRef(false);
-
-    useEffect(() => {
-        const initialize = async () => {
-            if (isInitialized.current) return;
-            isInitialized.current = true;
-            try {
-                await axios.post(`${SERVER_URL}/initialize`);
-                console.log("storage initialized");
-            } catch (err) {
-                console.error(err);
-            }
-        };
-        initialize();
-    }, []);
     return (
         <form className="main-form" onSubmit={(e) => handleSubmit(e)}>
             <div className="fields customer-fields">
