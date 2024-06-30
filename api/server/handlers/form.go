@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"backend/server/database"
-	"backend/server/middleware"
-	"backend/server/models"
+	"api/server/database"
+	"api/server/middleware"
+	"api/server/models"
 	"context"
 	"encoding/json"
 	"fmt"

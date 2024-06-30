@@ -1,7 +1,7 @@
 package main
 
 import (
-	"backend/server/handlers"
+	"api/server/handlers"
 	"log"
 	"net/http"
 )
