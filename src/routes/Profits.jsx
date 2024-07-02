@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { HandleNumericInput } from "./Form";
 function Profits() {
@@ -52,6 +52,9 @@ function Profits() {
                     <tr>
                         <th>Month</th>
                         <th>Profit</th>
+                        <th>Pieces sold</th>
+                        <th>Returned</th>
+                        <th>Pieces returned</th>
                         <th>Profit percentage</th>
                     </tr>
                 </thead>
@@ -59,7 +62,10 @@ function Profits() {
                     {profits?.map((profit, index) => (
                         <tr key={index}>
                             <td>{profit.month}</td>
-                            <td>{profit.profit}</td>
+                            <td>{profit.profits}</td>
+                            <td>{profit["pieces_sold"]}</td>
+                            <td>{profit.returned}</td>
+                            <td>{profit["pieces_returned"]}</td>
                             <td>
                                 <input
                                     type="text"

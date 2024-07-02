@@ -43,46 +43,6 @@ func collectionNotExistOrEmpty(client *mongo.Client, dbName, collectionName stri
 	return count == 0, nil
 }
 
-func initializeCollection(client *mongo.Client, dbName, collectionName string, data []models.Storage) error {
-	collection := client.Database(dbName).Collection(collectionName)
-	var documents []interface{}
-	for _, item := range data {
-		documents = append(documents, item)
-	}
-	_, err := collection.InsertMany(context.TODO(), documents)
-	return err
-}
-
-func HandleInitilizeStorage(w http.ResponseWriter, r *http.Request) {
-	middleware.EnableCors(&w)
-
-	emptyOrNotExist, err := collectionNotExistOrEmpty(database.Client, "store", "storage")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if !emptyOrNotExist {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": "Collection exists and is not empty"})
-		return
-	}
-	data := []models.Storage{
-		{TypeOfProduct: "Hoodie", Quantity: 0},
-		{TypeOfProduct: "Slim_T-shirt", Quantity: 0},
-		{TypeOfProduct: "Hav_T-shirt", Quantity: 0},
-	}
-
-	err = initializeCollection(database.Client, "store", "storage", data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Collection initialized with data"})
-
-}
-
 func HandleAmountUpdate(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(&w)
 	collection := database.Client.Database("store").Collection("storage")
@@ -109,7 +69,7 @@ func HandleAmountUpdate(w http.ResponseWriter, r *http.Request) {
 	err = collection.FindOne(context.TODO(), filter).Decode(&result)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			http.Error(w, "Product not found", http.StatusNotFound)
+			http.Error(w, "Product not found in storage", http.StatusNotFound)
 			return
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -126,6 +86,10 @@ func HandleAmountUpdate(w http.ResponseWriter, r *http.Request) {
 		newQuantity = result.Quantity - amount
 	}
 
+	if newQuantity < 0 {
+		http.Error(w, "Not enough quantity in storage", http.StatusBadRequest)
+		return
+	}
 	update := bson.D{
 		{"$set", bson.D{
 			{"quantity", newQuantity},

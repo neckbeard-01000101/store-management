@@ -51,24 +51,35 @@ func HandleGetData(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(documents)
 }
 
-func ToggleOrderState(w http.ResponseWriter, r *http.Request) {
+func HandleOrderState(w http.ResponseWriter, r *http.Request) {
 	middleware.EnableCors(&w)
-
-	pathSegments := strings.Split(r.URL.Path, "/")
-	orderID := pathSegments[len(pathSegments)-1]
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+	}
 	newState := r.URL.Query().Get("newState")
+	orderID := r.URL.Query().Get("orderId")
 	collectionName := r.URL.Query().Get("collectionName")
 
 	objectId, err := primitive.ObjectIDFromHex(orderID)
 	if err != nil {
-		panic(err)
+		http.Error(w, "Invalid order ID: "+err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	collection := database.Client.Database("store").Collection(collectionName)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	fmt.Println(objectId)
+	var order bson.M
+	if err := collection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&order); err != nil {
+		http.Error(w, "Error fetching order: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if order["order-state"] == newState {
+		http.Error(w, "Error: The new state is the same as the current state, so it was not updated", http.StatusBadRequest)
+		return
+	}
 	filter := bson.M{"_id": objectId}
 	update := bson.M{"$set": bson.M{"order-state": newState}}
 	result, err := collection.UpdateOne(ctx, filter, update)
@@ -77,13 +88,12 @@ func ToggleOrderState(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("Matched %d documents and modified %d documents\n", result.MatchedCount, result.ModifiedCount)
-
 	if result.MatchedCount == 0 {
 		http.Error(w, "No order found with the given ID", http.StatusNotFound)
 		return
 	}
 
+	fmt.Printf("Matched %d documents and modified %d documents\n", result.MatchedCount, result.ModifiedCount)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(bson.M{"message": "Order state updated successfully"})
 }

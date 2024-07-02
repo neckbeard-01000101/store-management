@@ -13,11 +13,11 @@ func main() {
 	router.HandleFunc("/send", handlers.HandlePostForm)
 	router.HandleFunc("/get/", handlers.HandleGetData)
 	router.HandleFunc("/collections", handlers.HandleGetCollections)
-	router.HandleFunc("/toggleOrderState/", handlers.ToggleOrderState)
-	// router.HandleFunc("POST /initialize", handlers.HandleInitilizeStorage)
+	router.HandleFunc("/updateState/", handlers.HandleOrderState)
 	router.HandleFunc("POST /updateAmount/", handlers.HandleAmountUpdate)
 	router.HandleFunc("/add", handlers.HandleAddToStorage)
 	router.HandleFunc("/deleteDocument/", handlers.DeleteDocument)
+	router.HandleFunc("/profit/", handlers.HandleProfits)
 	server := &http.Server{
 		Addr:    PORT,
 		Handler: router,
