@@ -1,4 +1,3 @@
-import React, { useEffect, useRef } from "react";
 import axios from "axios";
 
 async function handleSubmit(e) {
@@ -23,34 +22,32 @@ async function handleSubmit(e) {
     };
 
     try {
-        const response = await axios.post(
-            "http://localhost:8000/send",
-            JSON.stringify(data),
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            },
+        const clothesType = data["clothes-type"];
+        const numberOfPieces = data["pieces-num"];
+        const color = data["color"];
+        const size = data["size"];
+        const updateResponse = await axios.post(
+            `http://localhost:8000/updateAmount/?type=${clothesType}&amount=${numberOfPieces}&oper=sub&color=${color}&size=${size}`,
         );
-        console.log(response);
-        if (response.status === 200) {
-            const clothesType = data["clothes-type"];
-            const numberOfPieces = data["pieces-num"];
-            const color = data["color"];
-            const size = data["size"];
-            try {
-                const res = await axios.post(
-                    `http://localhost:8000/updateAmount/?type=${clothesType}&amount=${numberOfPieces}&oper=sub&color=${color}&size=${size}`,
-                );
-                console.log(res.data);
-            } catch (err) {
-                console.error(err);
+        console.log(updateResponse);
+
+        if (updateResponse.status === 200) {
+            const response = await axios.post(
+                "http://localhost:8000/send",
+                JSON.stringify(data),
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                },
+            );
+            console.log(response);
+            if (response.status === 200) {
+                alert("Data sent successfully");
             }
-            alert("Data sent successfully");
         }
     } catch (err) {
-        console.error(err);
-        alert("Error sending data", err);
+        alert(err.response.data);
     }
 }
 
@@ -129,8 +126,8 @@ const fields = [
                 isNumeric: true,
             },
             {
-                labelName: "Cost per piece",
-                placeHolder: "Cost per piece",
+                labelName: "Total cost",
+                placeHolder: "Total cost",
                 inputType: "text",
                 id: "total-cost",
                 isNumeric: true,
@@ -183,12 +180,16 @@ const fields = [
                 id: "order-state",
                 options: [
                     {
-                        text: "Undone",
-                        value: "Undone",
+                        text: "Pending",
+                        value: "pending",
                     },
                     {
-                        text: "Done",
-                        value: "Done",
+                        text: "Delivered",
+                        value: "deliverd",
+                    },
+                    {
+                        text: "Returned",
+                        value: "returned",
                     },
                 ],
             },
@@ -298,7 +299,7 @@ function FormElement(props) {
         return (
             <div className="form-element">
                 <label htmlFor={id}>{labelName}</label>
-                <select name={id} id={id}>
+                <select name={id} id={id} required>
                     {options.map((option) => (
                         <option key={option.value} value={option.value}>
                             {option.text}
@@ -313,6 +314,7 @@ function FormElement(props) {
         <div className="form-element">
             <label htmlFor={id}>{labelName}</label>
             <input
+                required
                 onChange={isNumeric ? (e) => HandleNumericInput(e) : null}
                 type={inputType}
                 id={id}

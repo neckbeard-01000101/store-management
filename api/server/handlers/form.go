@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func HandlePostForm(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +25,6 @@ func HandlePostForm(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	formData.TotalCost *= formData.NumOfPieces
 	formData.TotalProfit = formData.TotalCost - formData.SellerProfit - formData.DeliveryFee - formData.ProductCost
 	now := time.Now()
 	formData.SentDate = now.Format("02-01")
@@ -35,6 +33,16 @@ func HandlePostForm(w http.ResponseWriter, r *http.Request) {
 	collection := database.Client.Database("store").Collection(collectionName)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	var existingDoc bson.M
+	err = collection.FindOne(ctx, bson.M{"order-num": formData.OrderNum}).Decode(&existingDoc)
+	if err == nil {
+		formData.DeliveryFee = 0
+		formData.TotalCost = 0
+		formData.SellerProfit = 0
+		formData.ProductCost = 0
+		formData.TotalProfit = 0
+	}
+
 	result, err := collection.InsertOne(ctx, bson.M{
 		"order-num":       formData.OrderNum,
 		"order-state":     formData.OrderState,
@@ -56,18 +64,6 @@ func HandlePostForm(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		http.Error(w, "Error saving form data: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	monthsProfitsCollection := database.Client.Database("store").Collection("months-profits")
-
-	filter := bson.M{"month": collectionName}
-	update := bson.M{"$inc": bson.M{"profit": formData.TotalProfit}}
-	opts := options.Update().SetUpsert(true)
-
-	_, err = monthsProfitsCollection.UpdateOne(ctx, filter, update, opts)
-	if err != nil {
-		http.Error(w, "Failed to update month's profit: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 

@@ -102,8 +102,8 @@ export default function Data() {
         setSelectedCollection(event.target.value);
     };
 
-    const handleStateChange = async (index) => {
-        if (!window.confirm("Are you sure you want to mark the order as done?"))
+    const updateOrderState = async (index) => {
+        if (!window.confirm("Are you sure you want to change the state?"))
             return;
         if (index < 0 || index >= data.length) {
             console.error("Invalid index:", index);
@@ -112,28 +112,21 @@ export default function Data() {
 
         const newData = [...data];
         const item = newData[index];
-        if (!item) {
-            console.error("Item not found at index:", index);
-            return;
-        }
-
-        if (!("order-state" in item)) {
-            console.error("Property 'orderState' not found in item:", item);
-            return;
-        }
+        const newState = document.getElementById(`state-select-${index}`).value;
         const collectionName = item["collection-name"];
-        const newState = item["order-state"] === "Undone" ? "Done" : "Undone";
-        item["order-state"] = newState;
         setData(newData);
         try {
             await axios.post(
-                `${SERVER_URL}/toggleOrderState/${item._id}?newState=${newState}&collectionName=${collectionName}`,
+                `${SERVER_URL}/updateState/?orderId=${item._id}&newState=${newState}&collectionName=${collectionName}`,
             );
             console.log("New state:", newState);
+            await axios.post(
+                `${SERVER_URL}/profit/?month=${item["collection-name"]}&state=${newState}&cost=${item["total-cost"]}&profit=${item["total-profit"]}&pieces=${item["pieces-num"]}`,
+            );
             alert("Order state changed successfully");
-        } catch (error) {
-            console.error("Failed to update order state:", error);
-            alert("There was an error changing the order state");
+        } catch (err) {
+            console.error("Failed to update order state:", err);
+            alert(err.response.data);
         }
     };
 
@@ -180,27 +173,30 @@ export default function Data() {
                             {data?.map((item, index) => (
                                 <tr key={index}>
                                     <td>{item["order-num"]}</td>
-                                    <td
-                                        style={
-                                            item["order-state"] === "Done"
-                                                ? {
-                                                      backgroundColor:
-                                                          "#abffc4",
-                                                  }
-                                                : null
-                                        }
-                                    >
-                                        {item["order-state"]}
-
+                                    <td>
+                                        <select
+                                            id={`state-select-${index}`}
+                                            defaultValue={item["order-state"]}
+                                        >
+                                            <option value="pending">
+                                                Pending
+                                            </option>
+                                            <option value="delivered">
+                                                Delivered
+                                            </option>
+                                            <option value="returned">
+                                                Returned
+                                            </option>
+                                        </select>
                                         <button
-                                            className="state-btn"
                                             onClick={() =>
-                                                handleStateChange(index)
+                                                updateOrderState(
+                                                    index,
+                                                    item._id,
+                                                )
                                             }
                                         >
-                                            {item["order-state"] === "Undone"
-                                                ? "Mark as done"
-                                                : "Mark as undone"}
+                                            Update State
                                         </button>
                                     </td>
                                     <td>{item["customer-name"]}</td>
