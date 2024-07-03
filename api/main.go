@@ -18,6 +18,7 @@ func main() {
 	router.HandleFunc("/add", handlers.HandleAddToStorage)
 	router.HandleFunc("/deleteDocument/", handlers.DeleteDocument)
 	router.HandleFunc("/profit/", handlers.HandleProfits)
+	router.HandleFunc("/is-done/", handlers.ToggleIsDone)
 	server := &http.Server{
 		Addr:    PORT,
 		Handler: router,

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -132,4 +133,50 @@ func DeleteDocument(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(bson.M{"message": "Document deleted successfully"})
+}
+
+func ToggleIsDone(w http.ResponseWriter, r *http.Request) {
+	middleware.EnableCors(&w)
+	pathSegments := strings.Split(r.URL.Path, "/")
+	if len(pathSegments) < 3 {
+		http.Error(w, "Invalid URL path", http.StatusBadRequest)
+		return
+	}
+	id := pathSegments[2]
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		return
+	}
+	collectionName := r.URL.Query().Get("collection-name")
+	collection := database.Client.Database("store").Collection(collectionName)
+
+	var order bson.M
+	err = collection.FindOne(context.TODO(), bson.M{"_id": objectId}).Decode(&order)
+	if err != nil {
+		http.Error(w, "Order not found", http.StatusNotFound)
+		return
+	}
+
+	orderNumStr := r.URL.Query().Get("order-num")
+	orderNum, err := strconv.Atoi(orderNumStr)
+	if err != nil {
+		http.Error(w, "Invalid order number format", http.StatusBadRequest)
+		return
+	}
+	newIsDoneStatus := !order["is-done"].(bool)
+
+	updateResult, err := collection.UpdateMany(
+		context.TODO(),
+		bson.M{"order-num": orderNum},
+		bson.M{"$set": bson.M{"is-done": newIsDoneStatus}},
+	)
+	if err != nil {
+		http.Error(w, "Failed to update order status", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprintf(w, "Toggled 'is-done' status for %d documents\n", updateResult.ModifiedCount)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(bson.M{"message": "Order 'is-done' status toggled successfully"})
 }

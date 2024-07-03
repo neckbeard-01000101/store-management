@@ -42,7 +42,7 @@ func HandlePostForm(w http.ResponseWriter, r *http.Request) {
 		formData.ProductCost = 0
 		formData.TotalProfit = 0
 	}
-
+	formData.IsDone = false
 	result, err := collection.InsertOne(ctx, bson.M{
 		"order-num":       formData.OrderNum,
 		"order-state":     formData.OrderState,
@@ -61,6 +61,7 @@ func HandlePostForm(w http.ResponseWriter, r *http.Request) {
 		"sent-date":       formData.SentDate,
 		"collection-name": formData.Month,
 		"pieces-num":      formData.NumOfPieces,
+		"is-done":         formData.IsDone,
 	})
 	if err != nil {
 		http.Error(w, "Error saving form data: "+err.Error(), http.StatusInternalServerError)

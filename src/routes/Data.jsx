@@ -6,7 +6,46 @@ export default function Data() {
     const [collections, setCollections] = useState([]);
     const [data, setData] = useState([]);
     const [selectedCollection, setSelectedCollection] = useState("");
+async function toggleIsDone(index) {
+    if (!window.confirm("Are you sure you want to change the state?"))
+        return;
+    if (index < 0 || index >= data.length) {
+        console.error("Invalid index:", index);
+        return;
+    }
 
+    const item = data[index];
+    if (!item) {
+        console.error("Item not found at index:", index);
+        return;
+    }
+
+    const collectionName = item["collection-name"];
+    const orderId = item["_id"]; 
+    const orderNum = item["order-num"];
+
+    try {
+
+        const response = await axios.post(
+            `${SERVER_URL}/is-done/${orderId}?order-num=${orderNum}&collection-name=${collectionName}`,
+        );
+        if (response.status === 200) {
+            alert("Order state changed successfully!");
+            const newData = [...data];
+            newData[index] = {
+                ...newData[index],
+                "is-done": !newData[index]["is-done"], 
+            };
+            setData(newData);
+            window.location.reload();
+        } else {
+            throw new Error("Failed to toggle the state");
+        }
+    } catch (error) {
+        console.error("Failed to update order state:", error);
+        alert("There was an error changing the order state");
+    }
+}
     const handleDelete = async (itemId) => {
         if (!confirm("Are you sure you want to DELETE an order?")) return;
         const collectionName = selectedCollection;
@@ -166,6 +205,7 @@ export default function Data() {
                                 <th>Clothes Type</th>
                                 <th>Total profit</th>
                                 <th>Profit percentage</th>
+                                <th>Is done</th>
                                 <th>Delete</th>
                             </tr>
                         </thead>
@@ -228,6 +268,10 @@ export default function Data() {
                                         >
                                             Calculate
                                         </button>
+                                    </td>
+                                    <td style={{backgroundColor: !item["is-done"]? "#f7a59c" : "#9cf7a2"}}>{item["is-done"] ? "Yes" : "No"}
+                                    
+                                        <button onClick={() => toggleIsDone(index)}>Toggle</button>
                                     </td>
                                     <td>
                                         <button
