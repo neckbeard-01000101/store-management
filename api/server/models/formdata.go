@@ -18,4 +18,5 @@ type FormData struct {
 	TotalProfit   int
 	SentDate      string
 	Month         string
+	IsDone        bool
 }
