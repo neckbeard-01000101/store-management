@@ -27,6 +27,7 @@ async function handleSubmit(e) {
         console.log(response);
     } catch (err) {
         console.error("Error:", err.message);
+        alert(err.response.data);
     }
 }
 function StorageForm() {

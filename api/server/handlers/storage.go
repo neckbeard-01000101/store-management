@@ -128,6 +128,21 @@ func HandleAddToStorage(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	var existingProduct models.Storage
+	err := collection.FindOne(ctx, bson.M{
+		"type_of_product": storageData.TypeOfProduct,
+		"product_color":   storageData.Color,
+		"product_size":    storageData.Size,
+	}).Decode(&existingProduct)
+
+	if err == nil {
+		http.Error(w, "Product already exists, try updating the quantity instead.", http.StatusBadRequest)
+		return
+	} else if err != mongo.ErrNoDocuments {
+		http.Error(w, "Error checking for existing document: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	insertResult, err := collection.InsertOne(ctx, bson.M{
 		"type_of_product": storageData.TypeOfProduct,
 		"product_color":   storageData.Color,

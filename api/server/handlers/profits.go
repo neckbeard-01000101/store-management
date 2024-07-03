@@ -4,7 +4,6 @@ import (
 	"api/server/database"
 	"api/server/middleware"
 	"context"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -16,14 +15,27 @@ func HandleProfits(w http.ResponseWriter, r *http.Request) {
 
 	month := r.URL.Query().Get("month")
 	state := r.URL.Query().Get("state")
-	cost, _ := strconv.Atoi(r.URL.Query().Get("cost"))
-	profit, _ := strconv.Atoi(r.URL.Query().Get("profit"))
-	numOfPieces, _ := strconv.Atoi(r.URL.Query().Get("pieces"))
+	cost, err := strconv.Atoi(r.URL.Query().Get("cost"))
+	if err != nil {
+		http.Error(w, "Invalid cost", http.StatusBadRequest)
+		return
+	}
+	profit, err := strconv.Atoi(r.URL.Query().Get("profit"))
+	if err != nil {
+		http.Error(w, "Invalid profit", http.StatusBadRequest)
+		return
+	}
+	numOfPieces, err := strconv.Atoi(r.URL.Query().Get("pieces"))
+	if err != nil {
+		http.Error(w, "Invalid number of pieces", http.StatusBadRequest)
+		return
+	}
+	oldState := r.URL.Query().Get("oldState")
 
 	collection := database.Client.Database("store").Collection("months-profits")
 
 	var result bson.M
-	err := collection.FindOne(context.TODO(), bson.M{"month": month}).Decode(&result)
+	err = collection.FindOne(context.TODO(), bson.M{"month": month}).Decode(&result)
 	if err != nil {
 		_, err := collection.InsertOne(context.TODO(), bson.M{
 			"month":           month,
@@ -41,9 +53,31 @@ func HandleProfits(w http.ResponseWriter, r *http.Request) {
 	update := bson.M{}
 	switch state {
 	case "delivered":
-		update = bson.M{"$inc": bson.M{"profits": profit, "pieces_sold": numOfPieces}}
+		if oldState == "returned" {
+			update = bson.M{
+				"$inc": bson.M{
+					"profits":         profit,
+					"pieces_sold":     numOfPieces,
+					"returned":        -cost,
+					"pieces_returned": -numOfPieces,
+				},
+			}
+		} else {
+			update = bson.M{"$inc": bson.M{"profits": profit, "pieces_sold": numOfPieces}}
+		}
 	case "returned":
-		update = bson.M{"$inc": bson.M{"returned": cost, "pieces_returned": numOfPieces}}
+		if oldState == "delivered" {
+			update = bson.M{
+				"$inc": bson.M{
+					"profits":         -profit,
+					"pieces_sold":     -numOfPieces,
+					"returned":        cost,
+					"pieces_returned": numOfPieces,
+				},
+			}
+		} else {
+			update = bson.M{"$inc": bson.M{"returned": cost, "pieces_returned": numOfPieces}}
+		}
 	case "pending":
 		return
 	default:
@@ -56,6 +90,4 @@ func HandleProfits(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to update document", http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Fprintf(w, "Document updated successfully")
 }
