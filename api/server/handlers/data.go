@@ -148,7 +148,7 @@ func ToggleIsDone(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid ID format", http.StatusBadRequest)
 		return
 	}
-	collectionName := r.URL.Query().Get("collection-name")
+	collectionName := r.URL.Query().Get("collectionName")
 	collection := database.Client.Database("store").Collection(collectionName)
 
 	var order bson.M

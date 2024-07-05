@@ -15,6 +15,7 @@ export default function Data() {
         }
 
         const item = data[index];
+        console.log(data);
         if (!item) {
             console.error("Item not found at index:", index);
             return;
@@ -26,7 +27,7 @@ export default function Data() {
 
         try {
             const response = await axios.post(
-                `${SERVER_URL}/is-done/${orderId}?order-num=${orderNum}&collection-name=${collectionName}`,
+                `${SERVER_URL}/is-done/${orderId}?order-num=${orderNum}&collectionName=${collectionName}`,
             );
             if (response.status === 200) {
                 alert("Order state changed successfully!");
@@ -65,7 +66,7 @@ export default function Data() {
             );
             alert(data.message);
         } catch (error) {
-            console.error("Error deleting document:", error);
+            console.error("Error deleting document:", error.response.data);
             alert(error.response?.data?.message || error.message);
         }
     };
@@ -160,7 +161,7 @@ export default function Data() {
             );
             console.log("New state:", newState);
             await axios.post(
-                `${SERVER_URL}/profit/?month=${item["collection-name"]}&state=${newState}&cost=${item["total-cost"]}&profit=${item["total-profit"]}&pieces=${item["pieces-num"]}&oldState=${oldState}`,
+                `${SERVER_URL}/profit/?month=${item["collection-name"]}&state=${newState}&cost=${item["cost-of-product"]}&profit=${item["total-profit"]}&pieces=${item["pieces-num"]}&oldState=${oldState}`,
             );
             alert("Order state changed successfully");
         } catch (err) {
