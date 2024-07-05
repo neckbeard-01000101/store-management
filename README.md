@@ -5,4 +5,4 @@ Make sure the you have `mongodb` installed, if not, [Click here to download it](
 ## 2. Install `python`
 [Click here to download it](https://www.python.org/downloads/)
 ## 3. Run the application
-You can see instructions on how to get the application running on the [releases page](https://github.com/neckbeard-01000101/store-management/releases/tag/v1.0.2)
+You can see instructions on how to get the application running on the [releases page](https://github.com/neckbeard-01000101/store-management/releases)
