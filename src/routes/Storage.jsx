@@ -54,7 +54,7 @@ function Storage() {
         fetchData();
     }, []);
     function sortFunction(a, b) {
-        const sizeOrder = ["S", "M", "XL", "XXL", "XXXL", "XXXXL"];
+        const sizeOrder = ["S", "M", "L", "XL", "XXL", "XXXL", "XXXXL"];
 
         if (a.type_of_product < b.type_of_product) return -1;
         if (a.type_of_product > b.type_of_product) return 1;
