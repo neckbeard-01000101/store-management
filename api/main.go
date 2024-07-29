@@ -1,12 +1,19 @@
 package main
 
 import (
+	"api/server/database"
 	"api/server/handlers"
+	"github.com/gofor-little/env"
 	"log"
 	"net/http"
 )
 
 func main() {
+	err := env.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+	database.Init()
 	const PORT string = ":8000"
 
 	router := http.NewServeMux()

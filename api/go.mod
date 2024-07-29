@@ -3,6 +3,7 @@ module api
 go 1.22.4
 
 require (
+	github.com/gofor-little/env v1.0.18 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
