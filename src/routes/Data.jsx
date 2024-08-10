@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { HandleNumericInput } from "./Form";
 const SERVER_URL = "http://localhost:8000";
@@ -273,8 +273,8 @@ export default function Data() {
                                     <td
                                         style={{
                                             backgroundColor: !item["is-done"]
-                                                ? "#f7a59c"
-                                                : "#9cf7a2",
+                                                ? "#e02424"
+                                                : "#057a55",
                                         }}
                                     >
                                         {item["is-done"] ? "Yes" : "No"}
@@ -291,7 +291,6 @@ export default function Data() {
                                             onClick={() =>
                                                 handleDelete(item._id)
                                             }
-                                            style={{ background: "#ff6054" }}
                                         >
                                             Delete
                                         </button>
