@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { HandleNumericInput } from "./Form";
 const SERVER_URL = "http://localhost:8000";
@@ -6,6 +6,16 @@ export default function Data() {
     const [collections, setCollections] = useState([]);
     const [data, setData] = useState([]);
     const [selectedCollection, setSelectedCollection] = useState("");
+    const fetchData = useCallback(async () => {
+        try {
+            const response = await axios.get(
+                `${SERVER_URL}/get/${selectedCollection}`,
+            );
+            setData(response.data);
+        } catch (error) {
+            console.error("Failed to fetch data:", error);
+        }
+    }, [selectedCollection]);
     async function toggleIsDone(index) {
         if (!window.confirm("Are you sure you want to change the state?"))
             return;
@@ -24,10 +34,10 @@ export default function Data() {
         const collectionName = item["collection-name"];
         const orderId = item["_id"];
         const orderNum = item["order-num"];
-
+        const newState = !item["is-done"];
         try {
             const response = await axios.post(
-                `${SERVER_URL}/is-done/${orderId}?order-num=${orderNum}&collectionName=${collectionName}`,
+                `${SERVER_URL}/is-done/${orderId}?order-num=${orderNum}&collectionName=${collectionName}&new-state=${newState}`,
             );
             if (response.status === 200) {
                 alert("Order state changed successfully!");
@@ -37,7 +47,7 @@ export default function Data() {
                     "is-done": !newData[index]["is-done"],
                 };
                 setData(newData);
-                window.location.reload();
+                fetchData();
             } else {
                 throw new Error("Failed to toggle the state");
             }
@@ -116,21 +126,10 @@ export default function Data() {
     }, []);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(
-                    `${SERVER_URL}/get/${selectedCollection}`,
-                );
-                setData(response.data);
-            } catch (error) {
-                console.error("Failed to fetch data:", error);
-            }
-        };
-
         if (selectedCollection) {
             fetchData();
         }
-    }, [selectedCollection]);
+    }, [selectedCollection, fetchData]);
     useEffect(() => {
         if (collections.length > 0) {
             setSelectedCollection(collections[0]);
@@ -270,20 +269,18 @@ export default function Data() {
                                             Calculate
                                         </button>
                                     </td>
-                                    <td
-                                        style={{
-                                            backgroundColor: !item["is-done"]
-                                                ? "#e02424"
-                                                : "#057a55",
-                                        }}
-                                    >
+                                    <td>
                                         {item["is-done"] ? "Yes" : "No"}
-
-                                        <button
-                                            onClick={() => toggleIsDone(index)}
-                                        >
-                                            Toggle
-                                        </button>
+                                        <input
+                                            id={"is-done" + index}
+                                            type="checkbox"
+                                            checked={item["is-done"]}
+                                            onChange={() => toggleIsDone(index)}
+                                        />
+                                        <label
+                                            className="toggle"
+                                            htmlFor={"is-done" + index}
+                                        ></label>
                                     </td>
                                     <td>
                                         <button

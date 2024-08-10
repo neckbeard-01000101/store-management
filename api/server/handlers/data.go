@@ -149,6 +149,7 @@ func ToggleIsDone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	collectionName := r.URL.Query().Get("collectionName")
+    
 	collection := database.Client.Database("store").Collection(collectionName)
 
 	var order bson.M
@@ -164,7 +165,14 @@ func ToggleIsDone(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid order number format", http.StatusBadRequest)
 		return
 	}
-	newIsDoneStatus := !order["is-done"].(bool)
+	newIsDoneStatusStr := r.URL.Query().Get("new-state")
+    
+    newIsDoneStatus, err := strconv.ParseBool(newIsDoneStatusStr)
+
+    if err != nil {
+		http.Error(w, "Error converting the state into a bool", http.StatusBadRequest)
+        return 
+    }
 
 	updateResult, err := collection.UpdateMany(
 		context.TODO(),

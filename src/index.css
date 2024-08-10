@@ -12,6 +12,7 @@
     --primary: hsl(220, 89%, 53%);
     --primary-dark: hsl(220, 89%, 43%);
     --red: hsl(0, 75%, 51%);
+    --green: hsl(161, 92%, 25%);
 }
 body {
     font-family:
@@ -239,5 +240,44 @@ td input {
     &:hover {
         background-color: var(--red);
         filter: brightness(0.9);
+    }
+}
+
+.toggle {
+    margin-top: 10px;
+}
+
+[type="checkbox"] {
+    display: none;
+
+    & + .toggle {
+        cursor: pointer;
+        position: relative;
+        display: inline-block;
+        width: 70px;
+        height: 35px;
+        border-radius: 999px;
+        background-color: var(--red);
+        transition: 0.2s;
+
+        &::before {
+            content: "";
+            position: absolute;
+            height: 80%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background-color: #fff;
+            top: 3px;
+            transition: 0.2s;
+            translate: -100%;
+        }
+    }
+    &:checked {
+        + .toggle {
+            background-color: var(--green);
+            &::before {
+                translate: 0%;
+            }
+        }
     }
 }
