@@ -13,6 +13,7 @@ export default function Data() {
             );
             setData(response.data);
         } catch (error) {
+            alert("Error fetching the data");
             console.error("Failed to fetch data:", error);
         }
     }, [selectedCollection]);
@@ -270,7 +271,7 @@ export default function Data() {
                                         </button>
                                     </td>
                                     <td>
-                                        {item["is-done"] ? "Yes" : "No"}
+                                        {item["is-done"] ? "Done" : "Not done"}
                                         <input
                                             id={"is-done" + index}
                                             type="checkbox"
