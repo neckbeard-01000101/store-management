@@ -4,8 +4,8 @@ export default function Navbar() {
     return (
         <nav className="navbar">
             <ul className="nav-links">
-                <CustomLink to="/form">Form</CustomLink>
-                <CustomLink to="/data">Data</CustomLink>
+                <CustomLink to="/add-order">Add new orders</CustomLink>
+                <CustomLink to="/orders">Orders</CustomLink>
                 <CustomLink to="/profits">Monthly profits</CustomLink>
                 <CustomLink to="/storage">Storage</CustomLink>
                 <CustomLink to="/add-to-storage">Add to storage</CustomLink>

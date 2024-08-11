@@ -19,14 +19,14 @@ function App() {
         const routeName = capitalize(
             location.pathname.replace("/", "") || "Form",
         );
-        document.title = routeName;
+        document.title = routeName.replaceAll("-", " ");
     }, [location.pathname]);
     return (
         <>
             <Navbar />
             <Routes>
-                <Route path="/form" element={<MainForm />} />
-                <Route path="/data" element={<Data />} />
+                <Route path="/add-order" element={<MainForm />} />
+                <Route path="/orders" element={<Data />} />
                 <Route path="/profits" element={<Profits />} />
                 <Route path="/storage" element={<Storage />} />
                 <Route path="/add-to-storage" element={<StorageForm />} />
