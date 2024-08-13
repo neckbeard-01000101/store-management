@@ -17,7 +17,7 @@ function App() {
     const location = useLocation();
     useEffect(() => {
         const routeName = capitalize(
-            location.pathname.replace("/", "") || "Form",
+            location.pathname.replace("/", "") || "Add orders",
         );
         document.title = routeName.replaceAll("-", " ");
     }, [location.pathname]);
@@ -30,7 +30,7 @@ function App() {
                 <Route path="/profits" element={<Profits />} />
                 <Route path="/storage" element={<Storage />} />
                 <Route path="/add-to-storage" element={<StorageForm />} />
-                <Route path="/" element={<Navigate to="/form" />} />
+                <Route path="/" element={<Navigate to="/add-order" />} />
             </Routes>
         </>
     );
