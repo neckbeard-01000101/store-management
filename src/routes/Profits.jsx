@@ -26,7 +26,7 @@ function Profits() {
             return;
         }
 
-        const totalProfit = profits[index]["profit"];
+        const totalProfit = profits[index]["profits"];
         if (!totalProfit) {
             console.error(
                 "Invalid item or total-profit not found:",

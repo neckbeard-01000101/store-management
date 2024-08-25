@@ -3,9 +3,10 @@ package main
 import (
 	"api/server/database"
 	"api/server/handlers"
-	"github.com/gofor-little/env"
 	"log"
 	"net/http"
+
+	"github.com/gofor-little/env"
 )
 
 func main() {

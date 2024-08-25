@@ -6,13 +6,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func HandleGetData(w http.ResponseWriter, r *http.Request) {
@@ -149,7 +148,7 @@ func ToggleIsDone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	collectionName := r.URL.Query().Get("collectionName")
-    
+
 	collection := database.Client.Database("store").Collection(collectionName)
 
 	var order bson.M
@@ -166,13 +165,13 @@ func ToggleIsDone(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	newIsDoneStatusStr := r.URL.Query().Get("new-state")
-    
-    newIsDoneStatus, err := strconv.ParseBool(newIsDoneStatusStr)
 
-    if err != nil {
+	newIsDoneStatus, err := strconv.ParseBool(newIsDoneStatusStr)
+
+	if err != nil {
 		http.Error(w, "Error converting the state into a bool", http.StatusBadRequest)
-        return 
-    }
+		return
+	}
 
 	updateResult, err := collection.UpdateMany(
 		context.TODO(),
